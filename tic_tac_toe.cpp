@@ -25,9 +25,9 @@ int main()
         {
             for(int j=0; j<COLUMNS; j++)
             {
-                std::cout << board[i][j];
+                std::cout << board[i][j] << "  ";
             }
-            std::cout << std::endl;
+            std::cout << std::endl << std::endl;
         }
         if (turn)
         {
@@ -52,9 +52,9 @@ int main()
         {
             for(int j=0; j<COLUMNS; j++)
             {
-                std::cout << board[i][j];
+                std::cout << board[i][j] << "  ";
             }
-            std::cout << std::endl;
+            std::cout << std::endl << std::endl;
         }
 
     return 0;
