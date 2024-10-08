@@ -1,4 +1,23 @@
 #include <iostream>
+#include <Windows.h>
+
+
+int screen_width = 11;
+int screen_height = 11;
+
+COORD get_cursor_position()
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (GetConsoleScreenBufferInfo(handle, &csbi))
+        {
+            return csbi.dwCursorPosition;
+        }
+        else
+        {
+            return {-1, -1};
+        }
+}
 
 int main()
 {
@@ -10,6 +29,10 @@ int main()
     int posx, posy;
     bool turn = false;
     int g = 0;
+    COORD origin;
+    origin.X = 0;
+    origin.Y = 0;
+    COORD curr;
 
     const int ROWS = 3;
     const int COLUMNS = 3;
@@ -18,9 +41,11 @@ int main()
                                  {'_', '_', '_'}};
 
     std::cout << "Starting game..." << std::endl;
+    std::cout << "Board status: " << std::endl;
+
     while(g < 9)
     {
-        std::cout << "Board status: " << std::endl;
+
         for(int i=0; i<ROWS; i++)
         {
             for(int j=0; j<COLUMNS; j++)
@@ -29,6 +54,7 @@ int main()
             }
             std::cout << std::endl << std::endl;
         }
+
         if (turn)
         {
             mark = p2_mark;
@@ -41,21 +67,20 @@ int main()
         std::cout << "Type desired position: ";
         std::cin >> posx >> posy;
         board[posx][posy] = mark;
+
+        curr = get_cursor_position();
+        curr.Y = curr.Y - 8;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), curr);
+
         turn = !turn;
         g++;
 
     }
     
-    std::cout << "Game finished !!!" << std::endl;
-    std::cout << "Final Board status: " << std::endl;
-    for(int i=0; i<ROWS; i++)
-        {
-            for(int j=0; j<COLUMNS; j++)
-            {
-                std::cout << board[i][j] << "  ";
-            }
-            std::cout << std::endl << std::endl;
-        }
+    curr = get_cursor_position();
+    curr.Y = curr.Y + 9;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), curr);
+    std::cout << "Game Finished !!!";
 
     return 0;
 }
