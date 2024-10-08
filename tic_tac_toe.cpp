@@ -1,9 +1,8 @@
 #include <iostream>
 #include <Windows.h>
 
-
-int screen_width = 11;
-int screen_height = 11;
+const int ROWS = 3;
+const int COLUMNS = 3;
 
 COORD get_cursor_position()
 {
@@ -17,6 +16,18 @@ COORD get_cursor_position()
         {
             return {-1, -1};
         }
+}
+
+void display_board(char board[ROWS][COLUMNS])
+{
+    for(int i=0; i<ROWS; i++)
+    {
+        for(int j=0; j<COLUMNS; j++)
+        {
+            std::cout << board[i][j] << "  ";
+        }
+        std::cout << std::endl << std::endl;
+    }
 }
 
 int main()
@@ -34,8 +45,6 @@ int main()
     origin.Y = 0;
     COORD curr;
 
-    const int ROWS = 3;
-    const int COLUMNS = 3;
     char board[ROWS][COLUMNS] = {{'_', '_', '_'},
                                  {'_', '_', '_'},
                                  {'_', '_', '_'}};
@@ -45,15 +54,7 @@ int main()
 
     while(g < 9)
     {
-
-        for(int i=0; i<ROWS; i++)
-        {
-            for(int j=0; j<COLUMNS; j++)
-            {
-                std::cout << board[i][j] << "  ";
-            }
-            std::cout << std::endl << std::endl;
-        }
+        display_board(board);
 
         if (turn)
         {
@@ -77,8 +78,10 @@ int main()
 
     }
     
+    display_board(board);
+
     curr = get_cursor_position();
-    curr.Y = curr.Y + 9;
+    curr.Y = curr.Y + 2;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), curr);
     std::cout << "Game Finished !!!";
 
