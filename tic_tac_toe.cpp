@@ -18,7 +18,7 @@ COORD get_cursor_position()
         }
 }
 
-void display_board(char board[ROWS][COLUMNS])
+void display_board(char board[ROWS][COLUMNS], bool clean=false)
 {
     for(int i=0; i<ROWS; i++)
     {
@@ -27,6 +27,11 @@ void display_board(char board[ROWS][COLUMNS])
             std::cout << board[i][j] << "  ";
         }
         std::cout << std::endl << std::endl;
+    }
+    if (clean)
+    {
+        std::cout << "                                    " << std::endl;
+        std::cout << "                                    " << std::endl;
     }
 }
 
@@ -122,8 +127,9 @@ int main()
     }
     else
     {
+        display_board(board, true);
         curr = get_cursor_position();
-        curr.Y = curr.Y + 2;
+        curr.Y = curr.Y - 2;
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), curr);    
     }
     if (status == 1)
@@ -136,7 +142,7 @@ int main()
     }
     else
     {
-        std::cout << "DRAW !!!";
+        std::cout << "Game Finished: " << "DRAW !!!";
     }
 
     return 0;
