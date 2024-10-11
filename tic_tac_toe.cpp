@@ -154,14 +154,9 @@ int main()
 
     while(g < 9)
     {
-        status = check_winner(board, p1_mark, p2_mark);
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
         display_board(board);
-        if (status != 0)
-        {
-            break;
-        }
-
+        
         if (turn)
         {
             mark = p2_mark;
@@ -172,7 +167,12 @@ int main()
         }
         
         player_move(board, mark);
-        
+        status = check_winner(board, p1_mark, p2_mark);
+        if (status != 0)
+        {
+            break;
+        }
+
         turn = !turn;
         g++;
 
