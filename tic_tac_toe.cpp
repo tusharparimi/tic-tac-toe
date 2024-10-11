@@ -1,8 +1,10 @@
 #include <iostream>
 #include <Windows.h>
+#include <conio.h>
 
 const int ROWS = 3;
 const int COLUMNS = 3;
+COORD origin;
 
 COORD get_cursor_position()
 {
@@ -18,7 +20,7 @@ COORD get_cursor_position()
         }
 }
 
-void display_board(char board[ROWS][COLUMNS], bool clean=false)
+void display_board(char (&board)[ROWS][COLUMNS], bool clean=false)
 {
     for(int i=0; i<ROWS; i++)
     {
@@ -35,7 +37,7 @@ void display_board(char board[ROWS][COLUMNS], bool clean=false)
     }
 }
 
-int check_winner(char board[ROWS][COLUMNS], char p1_mark, char p2_mark)
+int check_winner(char (&board)[ROWS][COLUMNS], char p1_mark, char p2_mark)
 {                            
     if ((board[0][0] == p1_mark && board[0][0] == board[1][1] && board[1][1] == board[2][2]) ||
         (board[0][2] == p1_mark && board[0][2] == board[1][1] && board[1][1] == board[2][0]))
@@ -63,6 +65,73 @@ int check_winner(char board[ROWS][COLUMNS], char p1_mark, char p2_mark)
     return 0;
 }
 
+void update_board_var(char (&board)[ROWS][COLUMNS], char mark, COORD curr)
+{
+    int x = (curr.X - origin.X) / 3;
+    int y = (curr.Y - origin.Y) / 2;
+    board[y][x] = mark;  
+}
+
+void highlight_cursor(int color_code=112)
+{
+    HANDLE console_color;
+    console_color = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(console_color, color_code);
+}
+
+void player_move(char (&board)[ROWS][COLUMNS], char mark)
+{
+    COORD cursor;
+    cursor = get_cursor_position();
+    bool move_selected = false;
+
+    while (true)
+    {
+        int key = _getch();
+        switch (key)
+        {
+            case 119: // up arrow
+                if (cursor.Y - 2 >= origin.Y)
+                {
+                    cursor.Y = cursor.Y - 2;
+                    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+                    break; 
+                }
+            case 115: // down arrow
+                if (cursor.Y + 2 < origin.Y + 5)
+                {
+                    cursor.Y = cursor.Y + 2;
+                    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+                    break; 
+                }
+            case 97: // left arrow
+                if (cursor.X - 3 >= origin.X)
+                {
+                    cursor.X = cursor.X - 3;
+                    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+                    break; 
+                }
+            case 100: // right arrow
+                if (cursor.X + 3 < origin.X + 7)
+                {
+                    cursor.X = cursor.X + 3;
+                    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+                    break; 
+                }
+            case 109: // 'm' buttom (mark)
+                highlight_cursor();
+                std::cout << mark;
+                update_board_var(board, mark, cursor);
+                highlight_cursor(7);
+                SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
+                move_selected = true;
+                break;   
+        }
+        if (move_selected) break;
+    }
+    
+}
+
 int main()
 {
     char p1_mark, p2_mark, mark;
@@ -70,12 +139,8 @@ int main()
     std::cin >> p1_mark;
     std::cout << "Type Player 2 mark: ";
     std::cin >> p2_mark;
-    int posx, posy;
     bool turn = false;
     int g = 0;
-    COORD origin;
-    origin.X = 0;
-    origin.Y = 0;
     COORD curr;
     int status;
 
@@ -85,10 +150,12 @@ int main()
 
     std::cout << "Game Started..." << std::endl;
     std::cout << "Board status: " << std::endl;
+    origin = get_cursor_position();
 
     while(g < 9)
     {
         status = check_winner(board, p1_mark, p2_mark);
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
         display_board(board);
         if (status != 0)
         {
@@ -104,15 +171,8 @@ int main()
             mark = p1_mark;
         }
         
-        std::cout << "Player " << static_cast<int>(turn) + 1 << "'s (" << mark << ") turn..." << std::endl;
-        std::cout << "Type desired position: ";
-        std::cin >> posx >> posy;
-        board[posx][posy] = mark;
-
-        curr = get_cursor_position();
-        curr.Y = curr.Y - 8;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), curr);
-
+        player_move(board, mark);
+        
         turn = !turn;
         g++;
 
@@ -120,17 +180,12 @@ int main()
 
     if (status != 0)
     {
-        curr = get_cursor_position();
-        curr.Y = curr.Y - 6;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), curr);
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
         display_board(board);
     }
     else
     {
-        display_board(board, true);
-        curr = get_cursor_position();
-        curr.Y = curr.Y - 2;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), curr);    
+        display_board(board);    
     }
     if (status == 1)
         {
