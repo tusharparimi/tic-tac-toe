@@ -20,7 +20,7 @@ COORD get_cursor_position()
         }
 }
 
-void display_board(char (&board)[ROWS][COLUMNS], bool clean=false)
+void display_board(char (&board)[ROWS][COLUMNS])
 {
     for(int i=0; i<ROWS; i++)
     {
@@ -29,11 +29,6 @@ void display_board(char (&board)[ROWS][COLUMNS], bool clean=false)
             std::cout << board[i][j] << "  ";
         }
         std::cout << std::endl << std::endl;
-    }
-    if (clean)
-    {
-        std::cout << "                                    " << std::endl;
-        std::cout << "                                    " << std::endl;
     }
 }
 
