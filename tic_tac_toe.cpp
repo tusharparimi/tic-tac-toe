@@ -37,32 +37,67 @@ void display_board(char (&board)[ROWS][COLUMNS], bool clean=false)
     }
 }
 
-int check_winner(char (&board)[ROWS][COLUMNS], char p1_mark, char p2_mark)
-{                            
-    if ((board[0][0] == p1_mark && board[0][0] == board[1][1] && board[1][1] == board[2][2]) ||
-        (board[0][2] == p1_mark && board[0][2] == board[1][1] && board[1][1] == board[2][0]))
+struct win_status {
+    int winner, line;
+};
+
+win_status check_winner(char (&board)[ROWS][COLUMNS], char p1_mark, char p2_mark)
+{
+    win_status ws;                            
+    if (board[0][0] == p1_mark && board[0][0] == board[1][1] && board[1][1] == board[2][2])
     {
-        return 1;
+        ws.winner = 1;
+        ws.line = 6;
+        return ws;
     }
-    if (board[0][0] == p2_mark && board[0][0] == board[1][1] && board[1][1] == board[2][2] ||
-        (board[0][2] == p2_mark && board[0][2] == board[1][1] && board[1][1] == board[2][0]))
+    if (board[0][2] == p1_mark && board[0][2] == board[1][1] && board[1][1] == board[2][0])
     {
-        return 2;
+        ws.winner = 1;
+        ws.line = 7;
+        return ws;
+    }
+    if (board[0][0] == p2_mark && board[0][0] == board[1][1] && board[1][1] == board[2][2])
+    {
+        ws.winner = 2;
+        ws.line = 6;
+        return ws;
+    }
+    if (board[0][2] == p2_mark && board[0][2] == board[1][1] && board[1][1] == board[2][0])
+    {
+        ws.winner = 2;
+        ws.line = 7;
+        return ws;
     }
     for (int i=0; i<ROWS; i++)
     {
-        if ((board[i][0] == p1_mark && board[i][0] == board[i][1] && board[i][1] == board[i][2]) ||
-            (board[0][i] == p1_mark && board[0][i] == board[1][i] && board[1][i] == board[2][i]))
+        if (board[i][0] == p1_mark && board[i][0] == board[i][1] && board[i][1] == board[i][2])
         {
-            return 1;
+            ws.winner = 1;
+            ws.line = i;
+            return ws;
         }
-        if ((board[i][0] == p2_mark && board[i][0] == board[i][1] && board[i][1] == board[i][2]) ||
-            (board[0][i] == p2_mark && board[0][i] == board[1][i] && board[1][i] == board[2][i]))
+        if (board[0][i] == p1_mark && board[0][i] == board[1][i] && board[1][i] == board[2][i])
         {
-            return 2;
+            ws.winner = 1;
+            ws.line = i + 3;
+            return ws;
+        }
+        if (board[i][0] == p2_mark && board[i][0] == board[i][1] && board[i][1] == board[i][2]) 
+        {
+            ws.winner = 2;
+            ws.line = i;
+            return ws;
+        }
+        if (board[0][i] == p2_mark && board[0][i] == board[1][i] && board[1][i] == board[2][i])
+        {
+            ws.winner = 2;
+            ws.line = i + 3;
+            return ws;
         }
     }
-    return 0;
+    ws.winner = 0;
+    ws.line = -1;
+    return ws;
 }
 
 void update_board_var(char (&board)[ROWS][COLUMNS], char mark, COORD curr)
@@ -132,6 +167,66 @@ void player_move(char (&board)[ROWS][COLUMNS], char mark)
     
 }
 
+void connect_win_line(win_status ws)
+{
+    COORD cursor = origin;
+    if (ws.line >= 0 && ws.line <= 2)
+    {
+        cursor.Y = cursor.Y + ws.line * 2;
+        cursor.X = 1;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '-';
+        cursor.X = 2;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '-';
+        cursor.X = 4;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '-';
+        cursor.X = 5;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '-';
+    }
+    else if (ws.line >= 3 && ws.line <= 5)
+    {
+        cursor.X = cursor.X + ((ws.line - 3) * 3);
+        cursor.Y = cursor.Y + 1;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '|';
+        cursor.Y = origin.Y;
+        cursor.Y = cursor.Y + 3;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '|';
+    }
+    else if (ws.line == 6)
+    {
+        cursor.X = cursor.X + 2;
+        cursor.Y = cursor.Y + 1;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '\\';
+        cursor = origin;
+        cursor.X = cursor.X + 4;
+        cursor.Y = cursor.Y + 3;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '\\';
+    }
+    else if (ws.line == 7)
+    {
+        cursor.X = cursor.X + 4;
+        cursor.Y = cursor.Y + 1;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '/';
+        cursor = origin;
+        cursor.X = cursor.X + 2;
+        cursor.Y = cursor.Y + 3;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+        std::cout << '/';
+    }
+    cursor = origin;
+    cursor.Y = cursor.Y + 5;
+    cursor.X = 0;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+}
+
 int main()
 {
     char p1_mark, p2_mark, mark;
@@ -142,7 +237,7 @@ int main()
     bool turn = false;
     int g = 0;
     COORD curr;
-    int status;
+    win_status ws;
 
     char board[ROWS][COLUMNS] = {{'_', '_', '_'},
                                  {'_', '_', '_'},
@@ -156,7 +251,7 @@ int main()
     {
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
         display_board(board);
-        
+
         if (turn)
         {
             mark = p2_mark;
@@ -167,8 +262,8 @@ int main()
         }
         
         player_move(board, mark);
-        status = check_winner(board, p1_mark, p2_mark);
-        if (status != 0)
+        ws = check_winner(board, p1_mark, p2_mark);
+        if (ws.winner != 0)
         {
             break;
         }
@@ -178,20 +273,23 @@ int main()
 
     }
 
-    if (status != 0)
+    if (ws.winner != 0)
     {
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
         display_board(board);
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
+        connect_win_line(ws);  
     }
     else
     {
-        display_board(board);    
+        display_board(board);
     }
-    if (status == 1)
+
+    if (ws.winner == 1)
         {
             std::cout << "Game Finished: " << p1_mark << " WINS !!!";
         }
-    else if (status == 2)
+    else if (ws.winner == 2)
     {
         std::cout << "Game Finished: " << p2_mark << " WINS !!!";
     }
