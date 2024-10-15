@@ -148,6 +148,7 @@ void player_move(char (&board)[ROWS][COLUMNS], char mark)
             case 109: // 'm' buttom (mark)
                 highlight_cursor();
                 std::cout << mark;
+                Sleep(500);
                 update_board_var(board, mark, cursor);
                 highlight_cursor(7);
                 SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
