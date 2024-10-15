@@ -33,8 +33,15 @@ void display_board(char (&board)[ROWS][COLUMNS])
 }
 
 struct win_status {
-    int winner, line;
+    int winner = 0;
+    int line[2] = {-1, -1};
 };
+
+void fill_line(int (&line)[2], int val)
+{
+    if (line[0] != -1) line[1] = val;
+    else line[0] = val;
+}
 
 win_status check_winner(char (&board)[ROWS][COLUMNS], char p1_mark, char p2_mark)
 {
@@ -42,56 +49,46 @@ win_status check_winner(char (&board)[ROWS][COLUMNS], char p1_mark, char p2_mark
     if (board[0][0] == p1_mark && board[0][0] == board[1][1] && board[1][1] == board[2][2])
     {
         ws.winner = 1;
-        ws.line = 6;
-        return ws;
+        fill_line(ws.line, 6);
     }
     if (board[0][2] == p1_mark && board[0][2] == board[1][1] && board[1][1] == board[2][0])
     {
         ws.winner = 1;
-        ws.line = 7;
-        return ws;
+        fill_line(ws.line, 7);
     }
     if (board[0][0] == p2_mark && board[0][0] == board[1][1] && board[1][1] == board[2][2])
     {
         ws.winner = 2;
-        ws.line = 6;
-        return ws;
+        fill_line(ws.line, 6);
     }
     if (board[0][2] == p2_mark && board[0][2] == board[1][1] && board[1][1] == board[2][0])
     {
         ws.winner = 2;
-        ws.line = 7;
-        return ws;
+        fill_line(ws.line, 7);
     }
     for (int i=0; i<ROWS; i++)
     {
         if (board[i][0] == p1_mark && board[i][0] == board[i][1] && board[i][1] == board[i][2])
         {
             ws.winner = 1;
-            ws.line = i;
-            return ws;
+            fill_line(ws.line, i);
         }
         if (board[0][i] == p1_mark && board[0][i] == board[1][i] && board[1][i] == board[2][i])
         {
             ws.winner = 1;
-            ws.line = i + 3;
-            return ws;
+            fill_line(ws.line, i + 3);
         }
         if (board[i][0] == p2_mark && board[i][0] == board[i][1] && board[i][1] == board[i][2]) 
         {
             ws.winner = 2;
-            ws.line = i;
-            return ws;
+            fill_line(ws.line, i);
         }
         if (board[0][i] == p2_mark && board[0][i] == board[1][i] && board[1][i] == board[2][i])
         {
             ws.winner = 2;
-            ws.line = i + 3;
-            return ws;
+            fill_line(ws.line, i + 3);
         }
     }
-    ws.winner = 0;
-    ws.line = -1;
     return ws;
 }
 
@@ -164,62 +161,69 @@ void player_move(char (&board)[ROWS][COLUMNS], char mark)
 
 void connect_win_line(win_status ws)
 {
-    COORD cursor = origin;
-    if (ws.line >= 0 && ws.line <= 2)
+    COORD cursor;
+    int i = 0;
+    while (i < 2)
     {
-        cursor.Y = cursor.Y + ws.line * 2;
-        cursor.X = 1;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '-';
-        cursor.X = 2;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '-';
-        cursor.X = 4;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '-';
-        cursor.X = 5;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '-';
-    }
-    else if (ws.line >= 3 && ws.line <= 5)
-    {
-        cursor.X = cursor.X + ((ws.line - 3) * 3);
-        cursor.Y = cursor.Y + 1;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '|';
-        cursor.Y = origin.Y;
-        cursor.Y = cursor.Y + 3;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '|';
-    }
-    else if (ws.line == 6)
-    {
-        cursor.X = cursor.X + 2;
-        cursor.Y = cursor.Y + 1;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '\\';
         cursor = origin;
-        cursor.X = cursor.X + 4;
-        cursor.Y = cursor.Y + 3;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '\\';
-    }
-    else if (ws.line == 7)
-    {
-        cursor.X = cursor.X + 4;
-        cursor.Y = cursor.Y + 1;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '/';
-        cursor = origin;
-        cursor.X = cursor.X + 2;
-        cursor.Y = cursor.Y + 3;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
-        std::cout << '/';
+        if (ws.line[i] >= 0 && ws.line[i] <= 2)
+        {
+            cursor.Y = cursor.Y + (ws.line[i] * 2);
+            cursor.X = 1;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '-';
+            cursor.X = 2;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '-';
+            cursor.X = 4;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '-';
+            cursor.X = 5;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '-';
+        }
+        if (ws.line[i] >= 3 && ws.line[i] <= 5)
+        {
+            cursor.X = cursor.X + ((ws.line[i] - 3) * 3);
+            cursor.Y = cursor.Y + 1;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '|';
+            cursor.Y = origin.Y;
+            cursor.Y = cursor.Y + 3;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '|';
+        }
+        if (ws.line[i] == 6)
+        {
+            cursor.X = cursor.X + 2;
+            cursor.Y = cursor.Y + 1;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '\\';
+            cursor = origin;
+            cursor.X = cursor.X + 4;
+            cursor.Y = cursor.Y + 3;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '\\';
+        }
+        if (ws.line[i] == 7)
+        {
+            cursor.X = cursor.X + 4;
+            cursor.Y = cursor.Y + 1;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '/';
+            cursor = origin;
+            cursor.X = cursor.X + 2;
+            cursor.Y = cursor.Y + 3;
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+            std::cout << '/';
+        }
+        i++;
     }
     cursor = origin;
     cursor.Y = cursor.Y + 5;
     cursor.X = 0;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
+
 }
 
 int main()
