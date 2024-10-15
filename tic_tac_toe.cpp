@@ -20,6 +20,17 @@ COORD get_cursor_position()
         }
 }
 
+char get_char_at_cursor()
+{
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    TCHAR str_from_console[1];
+    DWORD dw_chars;
+    COORD pos = get_cursor_position();
+    ReadConsoleOutputCharacter(handle, str_from_console, 1, pos, &dw_chars);
+    char c = str_from_console[0];
+    return c; 
+}
+
 void display_board(char (&board)[ROWS][COLUMNS])
 {
     for(int i=0; i<ROWS; i++)
@@ -146,14 +157,18 @@ void player_move(char (&board)[ROWS][COLUMNS], char mark)
                     break; 
                 }
             case 109: // 'm' buttom (mark)
-                highlight_cursor();
-                std::cout << mark;
-                Sleep(250);
-                update_board_var(board, mark, cursor);
-                highlight_cursor(7);
-                SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
-                move_selected = true;
-                break;   
+                char c = get_char_at_cursor();
+                if (c == '_')
+                {
+                    highlight_cursor();
+                    std::cout << mark;
+                    Sleep(250);
+                    update_board_var(board, mark, cursor);
+                    highlight_cursor(7);
+                    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), origin);
+                    move_selected = true;
+                    break;
+                }    
         }
         if (move_selected) break;
     }
