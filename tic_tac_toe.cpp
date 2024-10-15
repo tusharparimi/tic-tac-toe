@@ -287,11 +287,11 @@ int main()
 
     if (ws.winner == 1)
         {
-            std::cout << "Game Finished: " << p1_mark << " WINS !!!";
+            std::cout << "Game Finished: '" << p1_mark << "' WINS !!!";
         }
     else if (ws.winner == 2)
     {
-        std::cout << "Game Finished: " << p2_mark << " WINS !!!";
+        std::cout << "Game Finished: '" << p2_mark << "' WINS !!!";
     }
     else
     {
