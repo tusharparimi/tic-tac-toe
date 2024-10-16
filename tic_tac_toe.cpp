@@ -311,7 +311,7 @@ int main()
                                  {'_', '_', '_'},
                                  {'_', '_', '_'}};
 
-    std::cout << "Game Started..." << std::endl;
+    std::cout << "Game Started..." << std::endl << std::endl;
     std::cout << "Board status: " << std::endl;
     origin = get_cursor_position();
 
@@ -355,15 +355,15 @@ int main()
 
     if (ws.winner == 1)
         {
-            std::cout << "Game Finished: '" << p1_mark << "' WINS !!!";
+            std::cout << "Game Finished: '" << p1_mark << "' WINS !!!" << std::endl;
         }
     else if (ws.winner == 2)
     {
-        std::cout << "Game Finished: '" << p2_mark << "' WINS !!!";
+        std::cout << "Game Finished: '" << p2_mark << "' WINS !!!" << std::endl;
     }
     else
     {
-        std::cout << "Game Finished: " << "DRAW !!!";
+        std::cout << "Game Finished: " << "DRAW !!!" << std::endl;
     }
 
     return 0;
