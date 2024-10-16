@@ -49,10 +49,8 @@ void display_board(char (&board)[ROWS][COLUMNS])
 
 // win status structure with vars:
 // winner: int winner id
-// values:
 // 0(draw), 1(player1), 2(player2)
 // line: array with len 2, as a player can win max with 2 win lines
-// values:
 // -1(no win line), 0(row 0), 1(row 1), 2(row 2), 3(col 0), 4(col 1), 5(col 2), 6(left diag), 7(right diag)
 struct win_status {
     int winner = 0;
