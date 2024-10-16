@@ -2,10 +2,12 @@
 #include <Windows.h>
 #include <conio.h>
 
+// board shape ROWS, COLUMNS
 const int ROWS = 3;
 const int COLUMNS = 3;
-COORD origin;
+COORD origin; // cursor postion at start of board
 
+// get current cursor position
 COORD get_cursor_position()
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -20,6 +22,7 @@ COORD get_cursor_position()
         }
 }
 
+// get the char at current cursor position
 char get_char_at_cursor()
 {
     HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -31,6 +34,7 @@ char get_char_at_cursor()
     return c; 
 }
 
+// display current board status
 void display_board(char (&board)[ROWS][COLUMNS])
 {
     for(int i=0; i<ROWS; i++)
@@ -43,17 +47,26 @@ void display_board(char (&board)[ROWS][COLUMNS])
     }
 }
 
+// win status structure with vars:
+// winner: int winner id
+// values:
+// 0(draw), 1(player1), 2(player2)
+// line: array with len 2, as a player can win max with 2 win lines
+// values:
+// -1(no win line), 0(row 0), 1(row 1), 2(row 2), 3(col 0), 4(col 1), 5(col 2), 6(left diag), 7(right diag)
 struct win_status {
     int winner = 0;
     int line[2] = {-1, -1};
 };
 
+// helper func for filling values in win_status.line array
 void fill_line(int (&line)[2], int val)
 {
     if (line[0] != -1) line[1] = val;
     else line[0] = val;
 }
 
+// checks the 2d board array and return a win_status structure
 win_status check_winner(char (&board)[ROWS][COLUMNS], char p1_mark, char p2_mark)
 {
     win_status ws;                            
@@ -103,6 +116,7 @@ win_status check_winner(char (&board)[ROWS][COLUMNS], char p1_mark, char p2_mark
     return ws;
 }
 
+// update 2d board array based on current cursor mark
 void update_board_var(char (&board)[ROWS][COLUMNS], char mark, COORD curr)
 {
     int x = (curr.X - origin.X) / 3;
@@ -110,6 +124,7 @@ void update_board_var(char (&board)[ROWS][COLUMNS], char mark, COORD curr)
     board[y][x] = mark;  
 }
 
+// highlight cursor using specified color code
 void highlight_cursor(int color_code=112)
 {
     HANDLE console_color;
@@ -117,6 +132,7 @@ void highlight_cursor(int color_code=112)
     SetConsoleTextAttribute(console_color, color_code);
 }
 
+// interactive cursor movement and marking by using WASD and 'm' buttons for each player during their turn
 void player_move(char (&board)[ROWS][COLUMNS], char mark)
 {
     COORD cursor;
@@ -175,14 +191,15 @@ void player_move(char (&board)[ROWS][COLUMNS], char mark)
     
 }
 
+// connecting the win lines if any specified in the win_status structure
 void connect_win_line(win_status ws)
 {
     COORD cursor;
     int i = 0;
-    while (i < 2)
+    while (i < 2) // connect each win line in win_status.line[2]
     {
-        cursor = origin;
-        if (ws.line[i] >= 0 && ws.line[i] <= 2)
+        cursor = origin; // setting cursor to start of board
+        if (ws.line[i] >= 0 && ws.line[i] <= 2) // row lines
         {
             cursor.Y = cursor.Y + (ws.line[i] * 2);
             cursor.X = 1;
@@ -198,7 +215,7 @@ void connect_win_line(win_status ws)
             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
             std::cout << '-';
         }
-        if (ws.line[i] >= 3 && ws.line[i] <= 5)
+        if (ws.line[i] >= 3 && ws.line[i] <= 5) // col lines
         {
             cursor.X = cursor.X + ((ws.line[i] - 3) * 3);
             cursor.Y = cursor.Y + 1;
@@ -209,7 +226,7 @@ void connect_win_line(win_status ws)
             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
             std::cout << '|';
         }
-        if (ws.line[i] == 6)
+        if (ws.line[i] == 6) // left diag line
         {
             cursor.X = cursor.X + 2;
             cursor.Y = cursor.Y + 1;
@@ -221,7 +238,7 @@ void connect_win_line(win_status ws)
             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
             std::cout << '\\';
         }
-        if (ws.line[i] == 7)
+        if (ws.line[i] == 7) // right diag line
         {
             cursor.X = cursor.X + 4;
             cursor.Y = cursor.Y + 1;
@@ -235,6 +252,7 @@ void connect_win_line(win_status ws)
         }
         i++;
     }
+    // setting cursor to end of board
     cursor = origin;
     cursor.Y = cursor.Y + 5;
     cursor.X = 0;
@@ -244,14 +262,15 @@ void connect_win_line(win_status ws)
 
 int main()
 {
+    // read in player marks
     char p1_mark, p2_mark, mark;
     std::cout << "Type Player 1 mark: ";
     std::cin >> p1_mark;
     std::cout << "Type Player 2 mark: ";
     std::cin >> p2_mark;
+    // turn: false (player 1 turn), true (player 2 turn)
     bool turn = false;
-    int g = 0;
-    COORD curr;
+    int g = 0; // game loop interator, only runs 9 times
     win_status ws;
 
     char board[ROWS][COLUMNS] = {{'_', '_', '_'},
