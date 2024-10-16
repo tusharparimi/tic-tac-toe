@@ -264,8 +264,20 @@ int main()
     char p1_mark, p2_mark, mark;
     std::cout << "Type Player 1 mark: ";
     std::cin >> p1_mark;
+    while (p1_mark == ' ' || p1_mark == '_')
+    {
+        std::cout << "Invalid, select another mark," << std::endl;
+        std::cout << "Type Player 1 mark: ";
+        std::cin >> p1_mark;
+    }
     std::cout << "Type Player 2 mark: ";
     std::cin >> p2_mark;
+    while (p2_mark == ' ' || p2_mark == '_')
+    {
+        std::cout << "Invalid, select another mark," << std::endl;
+        std::cout << "Type Player 2 mark: ";
+        std::cin >> p2_mark;
+    }
     while (p2_mark == p1_mark)
     {
         std::cout << "Cannot select the same mark as player 1," << std::endl;
