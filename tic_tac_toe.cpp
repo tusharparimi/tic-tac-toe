@@ -258,29 +258,46 @@ void connect_win_line(win_status ws)
 
 }
 
+bool validate_player_mark(char mark)
+{
+    if (mark == ' ' || mark == '_')
+    {
+        std::cout << "INVALID: cannot use ' ' or '_' as mark" << std::endl;
+        return false;
+    } 
+    return true;
+}
+
+bool validate_player_mark(char p1_mark, char p2_mark)
+{
+    if (p2_mark == ' ' || p2_mark == '_')
+    {
+        std::cout << "INVALID: cannot use ' ' or '_' as mark" << std::endl;
+        return false;
+    }
+    if (p1_mark == p2_mark)
+    {
+        std::cout << "INVALID: cannot use same mark as player 1" << std::endl;
+        return false;
+    }
+    return true;
+}
+
 int main()
 {
-    // read in player marks
+    // read and validate player marks
     char p1_mark, p2_mark, mark;
     std::cout << "Type Player 1 mark: ";
     std::cin >> p1_mark;
-    while (p1_mark == ' ' || p1_mark == '_')
+    while (!validate_player_mark(p1_mark))
     {
-        std::cout << "Invalid, select another mark," << std::endl;
         std::cout << "Type Player 1 mark: ";
         std::cin >> p1_mark;
     }
     std::cout << "Type Player 2 mark: ";
     std::cin >> p2_mark;
-    while (p2_mark == ' ' || p2_mark == '_')
+    while (!validate_player_mark(p1_mark, p2_mark))
     {
-        std::cout << "Invalid, select another mark," << std::endl;
-        std::cout << "Type Player 2 mark: ";
-        std::cin >> p2_mark;
-    }
-    while (p2_mark == p1_mark)
-    {
-        std::cout << "Cannot select the same mark as player 1," << std::endl;
         std::cout << "Type Player 2 mark: ";
         std::cin >> p2_mark;
     }
