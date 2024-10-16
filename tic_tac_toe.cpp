@@ -266,6 +266,13 @@ int main()
     std::cin >> p1_mark;
     std::cout << "Type Player 2 mark: ";
     std::cin >> p2_mark;
+    while (p2_mark == p1_mark)
+    {
+        std::cout << "Cannot select the same mark as player 1," << std::endl;
+        std::cout << "Type Player 2 mark: ";
+        std::cin >> p2_mark;
+    }
+
     // turn: false (player 1 turn), true (player 2 turn)
     bool turn = false;
     int g = 0; // game loop interator, only runs 9 times
