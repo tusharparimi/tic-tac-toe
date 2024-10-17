@@ -252,7 +252,7 @@ void connect_win_line(win_status ws)
     }
     // setting cursor to end of board
     cursor = origin;
-    cursor.Y = cursor.Y + 5;
+    cursor.Y = cursor.Y + 6;
     cursor.X = 0;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursor);
 
