@@ -6,9 +6,10 @@
 - And finally, try to win!
 
 ### DEMO
-https://github.com/user-attachments/assets/afe75bcf-4496-4532-8c9b-7bb64483e3fb
 
+https://github.com/user-attachments/assets/18c9709b-5dce-4cd9-a4af-9022b5ab0352
 
 
 ### Constraints
 - For now, only works on windows :(
+
